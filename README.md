@@ -49,14 +49,13 @@
 | **Assinaturas** | Cobranças recorrentes com geração automática de transações na data correta |
 | **Acertos** | Controle de valores emprestados e recebidos com writeoffs, transações vinculadas e pessoas reutilizáveis |
 | **Fontes de Renda** | Registro de entradas fixas e variáveis para cálculo de renda esperada |
-| **Calendário** | Visão mensal com saldo acumulado por dia — apenas dados reais, sem projeção futura |
+| **Calendário** | Visão mensal com saldo acumulado por dia |
 
 <br />
 
 ## Diferenciais
 
 - **100% offline e privado** — seus dados nunca saem da sua máquina. Sem cadastro, sem nuvem, sem telemetria.
-- **Banco local SQLite** — cada instância tem seu próprio banco, criado automaticamente na primeira execução.
 - **Experimento desktop nativo** — construído com Tauri + Rust, entregando performance de aplicação real sem depender de navegador.
 - **Tema escuro consistente** — interface dark única, pensada para longas sessões de uso sem cansar a visão.
 - **Ciclo real de cartão de crédito** — lógica de fechamento e vencimento que respeita o funcionamento real de faturas.
@@ -93,7 +92,6 @@ npm run tauri dev     # desenvolvimento
 npm run tauri build   # produção
 ```
 
-O banco de dados SQLite é criado automaticamente. Nenhuma configuração manual necessária.
 
 <br />
 
