@@ -1,118 +1,150 @@
-# GECTION
+<p align="center">
+  <img src="public/logo.png" alt="Gection" width="72" />
+</p>
 
-> Gerenciador financeiro pessoal para desktop.
+<h1 align="center">GECTION</h1>
 
-Aplicação desktop nativa para controle de finanças pessoais com contas, cartões de crédito, faturas, parcelamentos, orçamentos, tags, assinaturas, acertos entre pessoas e dashboard analítico — tudo rodando localmente no seu computador com banco de dados próprio em SQLite.
+<p align="center">
+  <b>Gestão em ação</b>
+  <br />
+  Transforme organização financeira em decisões inteligentes.
+  <br /><br />
+  <a href="https://github.com/renato0x/gection">
+    <img src="https://img.shields.io/badge/Tauri-2.11-6366f1?logo=tauri&labelColor=0b1120&logoColor=white" alt="Tauri" />
+  </a>
+  <a href="https://react.dev">
+    <img src="https://img.shields.io/badge/React_19-61DAFB?logo=react&labelColor=0b1120&logoColor=white" alt="React" />
+  </a>
+  <a href="https://www.typescriptlang.org">
+    <img src="https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&labelColor=0b1120&logoColor=white" alt="TypeScript" />
+  </a>
+  <a href="https://www.rust-lang.org">
+    <img src="https://img.shields.io/badge/Rust-2021-000000?logo=rust&labelColor=0b1120&logoColor=white" alt="Rust" />
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license_MIT-22c55e?labelColor=0b1120&logoColor=white" alt="MIT" />
+  </a>
+</p>
 
-![Tauri](https://img.shields.io/badge/Tauri-2.x-6366f1?logo=tauri)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript)
-![Rust](https://img.shields.io/badge/Rust-edition_2021-000000?logo=rust)
-![MIT](https://img.shields.io/badge/license-MIT-22c55e)
+<br />
+
+**Gection** — fusão de *Gestão* e *Action* — nasce da ideia de que controlar suas finanças não deve ser uma tarefa passiva. É um sistema desktop nativo, offline-first, que une o rigor do planejamento financeiro com a agilidade de um produto moderno. Cada tela, cada gráfico, cada insight existe para transformar dados em decisões.
+
+<br />
 
 ---
 
-## Funcionalidades
+<br />
 
-- **Dashboard** — visão geral com saldo real, receitas, despesas à vista e no crédito, fatura aberta, renda esperada, gastos por tag/categoria e comparativo mensal
-- **Contas** — contas corrente, poupança, crédito, dinheiro e investimento com saldo individual
-- **Transações** — receitas, despesas, transferências e transações de crédito com parcelamento
-- **Faturas** — visualização por ciclo de fechamento com parcelas correntes e futuras
-- **Cartão de Crédito** — suporte a dia de fechamento e vencimento, cálculo automático de ciclo
-- **Parcelamentos** — parcelas distribuídas por mês de vencimento da fatura
-- **Orçamentos** — definição de limites por categoria com sugestão 50/30/20 e alerta de estouro
-- **Tags** — categorização transversal de transações com gastos agregados
-- **Assinaturas** — cobranças recorrentes com geração automática de transações
-- **Acertos** — controle de valores emprestados/recebidos com pessoas reutilizáveis, writeoffs e transações vinculadas
-- **Fontes de Renda** — registro de entradas fixas e variáveis para cálculo de renda esperada
-- **Calendário** — visão mensal com saldo acumulado por dia (somente dias passados/hoje)
-- **Tema escuro** — interface dark única, sem modo claro
+## Visão Geral
 
-## Privacidade e Segurança
+| Funcionalidade | Descrição |
+|---|---|
+| **Dashboard** | Indicadores em tempo real: saldo, receitas, despesas à vista e no crédito, fatura aberta, renda esperada, gastos por tag e categoria, comparativo mensal |
+| **Contas** | Corrente, poupança, crédito, dinheiro e investimento — cada uma com saldo, limite e ciclo próprio |
+| **Transações** | Receitas, despesas, transferências e crédito com parcelamento inteligente por ciclo de fatura |
+| **Faturas** | Ciclo baseado em fechamento/vencimento, parcelas correntes e futuras separadas |
+| **Orçamentos** | Limites por categoria com sugestão 50/30/20, alerta de estouro e progresso visual |
+| **Tags** | Categorização transversal com agregadores de gastos e página de detalhes por tag |
+| **Assinaturas** | Cobranças recorrentes com geração automática de transações na data correta |
+| **Acertos** | Controle de valores emprestados e recebidos com writeoffs, transações vinculadas e pessoas reutilizáveis |
+| **Fontes de Renda** | Registro de entradas fixas e variáveis para cálculo de renda esperada |
+| **Calendário** | Visão mensal com saldo acumulado por dia — apenas dados reais, sem projeção futura |
 
-- **100% local** — todos os dados ficam exclusivamente no seu computador
-- **Sem internet** — nenhum dado sai da máquina, não requer cadastro ou login
-- **Banco SQLite** — banco de dados criado automaticamente em `app_data_dir/gection.db`
-- **Sem telemetria** — zero rastreamento, coleta de uso ou analytics
-- **Cada máquina tem seu próprio banco** — ao copiar o executável para outro PC, um novo banco vazio é criado automaticamente na primeira execução
+<br />
 
-## Stack Tecnológica
+## Diferenciais
 
-| Camada     | Tecnologia                                                            |
-| ---------- | --------------------------------------------------------------------- |
-| Interface  | [React 19](https://react.dev) + [TypeScript](https://www.typescriptlang.org) |
-| Estilos    | [Tailwind CSS v4](https://tailwindcss.com)                            |
-| Gráficos   | [Recharts](https://recharts.org)                                      |
-| Estado     | [Zustand](https://github.com/pmndrs/zustand)                          |
-| Rotas      | [React Router v7](https://reactrouter.com)                            |
-| Ícones     | [Lucide](https://lucide.dev)                                          |
-| Backend    | [Tauri v2](https://v2.tauri.app) (Rust)                              |
-| Banco      | [SQLite](https://www.sqlite.org) via [rusqlite](https://github.com/rusqlite/rusqlite) |
+- **100% offline e privado** — seus dados nunca saem da sua máquina. Sem cadastro, sem nuvem, sem telemetria.
+- **Banco local SQLite** — cada instância tem seu próprio banco, criado automaticamente na primeira execução.
+- **Experimento desktop nativo** — construído com Tauri + Rust, entregando performance de aplicação real sem depender de navegador.
+- **Tema escuro consistente** — interface dark única, pensada para longas sessões de uso sem cansar a visão.
+- **Ciclo real de cartão de crédito** — lógica de fechamento e vencimento que respeita o funcionamento real de faturas.
 
-## Pré-requisitos
+<br />
 
-Antes de começar, instale em sua máquina:
+## Tecnologias
 
-- **Node.js** 18 ou superior — [nodejs.org](https://nodejs.org)
-- **Rust** (toolchain stable) — [rustup.rs](https://rustup.rs)
-- **Dependências do Tauri** — consulte o guia oficial: [Tauri Prerequisites](https://v2.tauri.app/start/prerequisites/)
+```
+Frontend           React 19 · TypeScript 6 · Tailwind CSS v4 · Recharts · Zustand · React Router v7
+Backend            Tauri 2.11 · Rust 2021 edition · rusqlite · SQLite
+Ícones             Lucide
+Fonte              Inter
+```
 
-## Como usar
+<br />
+
+## Screenshots
+
+> *Em breve — capturas de tela demonstrando Dashboard, Faturas, Orçamentos e demais módulos.*
+
+<br />
+
+## Instalação
 
 ```bash
-# Clone o repositório
+# Pré-requisitos: Node.js 18+, Rust stable toolchain, dependências Tauri
+# Veja: https://v2.tauri.app/start/prerequisites/
+
 git clone https://github.com/renato0x/gection.git
 cd gection
-
-# Instale as dependências do frontend
 npm install
-
-# Execute em modo de desenvolvimento
-npm run tauri dev
-
-# Ou compile para produção
-npm run tauri build
+npm run tauri dev     # desenvolvimento
+npm run tauri build   # produção
 ```
 
-Na primeira execução, o banco de dados SQLite é criado automaticamente — nenhuma configuração manual é necessária.
+O banco de dados SQLite é criado automaticamente. Nenhuma configuração manual necessária.
 
-## Comandos disponíveis
+<br />
 
-| Comando                 | Descrição                                        |
-| ----------------------- | ------------------------------------------------ |
-| `npm run dev`           | Inicia o servidor Vite (frontend isolado)        |
-| `npm run build`         | Type-check + build do frontend                   |
-| `npm run lint`          | Executa ESLint                                   |
-| `npm run tauri dev`     | Ambiente completo de desenvolvimento (Vite + Tauri) |
-| `npm run tauri build`   | Gera o instalador para a plataforma atual        |
+## Comandos
 
-## Estrutura do projeto
+| Comando | Descrição |
+|---|---|
+| `npm run dev` | Servidor Vite (frontend isolado) |
+| `npm run build` | Type-check + build frontend |
+| `npm run lint` | ESLint |
+| `npm run tauri dev` | Desenvolvimento completo (Vite + Tauri) |
+| `npm run tauri build` | Compilação para distribuição |
+
+<br />
+
+## Estrutura
 
 ```
-src/                          # Frontend React
-├── components/               # Componentes reutilizáveis
-│   ├── layout/               # Layout, Sidebar, Header
-│   └── ui/                   # Card, Button, Modal, Input, etc.
-├── lib/                      # Cliente API, utilitários, formatação
-├── pages/                    # Páginas do app (Dashboard, Transações, etc.)
-├── stores/                   # Estados globais (Zustand)
-└── types/                    # Tipos TypeScript
+src                        Frontend React
+├── components
+│   ├── layout             Sidebar, Header, Layout
+│   └── ui                 Card, Button, Modal, Input, Select, Badge, ProgressBar, EmptyState
+├── lib                    API client, formatação, utilitários
+├── pages                  Dashboard, Transações, Faturas, Orçamento, Contas, etc.
+├── stores                 Zustand (UI, accounts, transactions, budgets, etc.)
+├── types                  Tipos compartilhados TypeScript
+└── index.css              Estilos globais, animações, design tokens
 
-src-tauri/                    # Backend Rust (Tauri)
-├── src/
-│   ├── commands/             # Handlers dos comandos Tauri
-│   ├── db/                   # Conexão, modelos, migrações
-│   ├── lib.rs                # Setup do app (banco, comandos)
-│   └── main.rs               # Entry point
-├── icons/                    # Ícones do aplicativo
-├── capabilities/             # Permissões do Tauri
-└── tauri.conf.json           # Configuração do Tauri
+src-tauri                  Backend Rust
+├── src
+│   ├── commands           Handlers Tauri (accounts, transactions, dashboard, invoice, etc.)
+│   ├── db                 Conexão, modelos, migrações SQLite
+│   ├── lib.rs             Setup: banco, comandos, plugins
+│   └── main.rs            Entry point
+├── icons                  Ícones do aplicativo
+├── capabilities           Permissões Tauri
+└── tauri.conf.json        Configuração Tauri
 ```
+
+<br />
 
 ## Licença
 
-Distribuído sob licença MIT. Veja [LICENSE](LICENSE) para mais informações.
+MIT © [renato0x](https://github.com/renato0x)
+
+<br />
 
 ---
 
-<p align="center">Desenvolvido por <a href="https://github.com/renato0x">renato0x</a></p>
+<p align="center">
+  <b>Gection — Gestão em ação</b>
+  <br />
+  <sub>Feito com Rust, TypeScript e muito café</sub>
+</p>

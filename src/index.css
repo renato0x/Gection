@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --color-surface: var(--surface);
   --color-surface-alt: var(--surface-alt);
   --color-border: var(--border);
@@ -21,7 +22,7 @@
   --sidebar: #070d1a;
   --accent: #818cf8;
   --accent-soft: #1e1b4b;
-  --accent-gradient: linear-gradient(135deg, #818cf8, #c084fc);
+  --brand-gradient: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
 }
 
 body {
@@ -31,8 +32,15 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
+::selection {
+  background-color: rgba(129, 140, 248, 0.3);
+  color: var(--text);
+}
+
+/* Scrollbar refinada */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -47,11 +55,15 @@ body {
   background: var(--text-secondary);
 }
 
-::selection {
-  background-color: var(--accent);
-  color: white;
+/* Brand gradient text utility */
+.brand-gradient {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+/* Animações */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

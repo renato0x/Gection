@@ -30,12 +30,12 @@ export function Sidebar() {
       )}>
         {sidebarOpen && (
           <div className="flex flex-col leading-tight">
-            <span className="font-extrabold text-base text-slate-800 dark:text-slate-100 tracking-[0.15em]">GECTION</span>
-            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 tracking-[0.2em]">FINANCE</span>
+            <span className="font-extrabold text-base text-slate-100 tracking-[0.15em]">GECTION</span>
+            <span className="text-[10px] font-medium brand-gradient tracking-wide">Gestão em ação</span>
           </div>
         )}
         {!sidebarOpen && (
-          <span className="font-extrabold text-sm text-slate-800 dark:text-slate-100 tracking-[0.15em]">G</span>
+          <span className="font-extrabold text-sm text-slate-100 tracking-[0.15em]">G</span>
         )}
       </div>
 
