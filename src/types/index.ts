@@ -151,6 +151,24 @@ export interface InvoiceData {
   installments_due: Installment[];
 }
 
+export interface CreditUsage {
+  account_id: string;
+  account_name: string;
+  credit_limit: number;
+  current_invoice_total: number;
+  future_invoices_total: number;
+  processing_total: number;
+  total_used: number;
+  available: number;
+}
+
+export interface FutureInvoiceGroup {
+  due_month: number;
+  due_year: number;
+  total: number;
+  installments: Installment[];
+}
+
 export interface CreateAccountData {
   name: string;
   account_type: string;

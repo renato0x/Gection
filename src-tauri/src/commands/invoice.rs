@@ -113,6 +113,157 @@ fn query_future_installments(
 }
 
 #[tauri::command]
+pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String> {
+    let conn = db.conn.lock().map_err(|e| e.to_string())?;
+
+    let mut stmt = conn.prepare(
+        "SELECT id, name, credit_limit, closing_day FROM accounts WHERE type = 'credit'"
+    ).map_err(|e| e.to_string())?;
+
+    let accounts: Vec<(String, String, Option<f64>, Option<i32>)> = stmt.query_map([], |row| {
+        Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))
+    }).map_err(|e| e.to_string())?
+    .filter_map(|r| r.ok())
+    .collect();
+
+    let today = chrono::Local::now();
+    let today_day = today.day() as i32;
+    let today_month = today.month() as i32;
+    let today_year = today.year();
+
+    let mut results = Vec::new();
+
+    for (account_id, account_name, credit_limit, closing_day) in accounts {
+        let cd = closing_day.unwrap_or(1);
+        let limit = credit_limit.unwrap_or(0.0);
+
+        let (curr_due_month, curr_due_year) = if today_day > cd {
+            if today_month == 12 { (1, today_year + 1) } else { (today_month + 1, today_year) }
+        } else {
+            (today_month, today_year)
+        };
+
+        let (curr_month, curr_year, prev_month, prev_year) = invoice_period(curr_due_month, curr_due_year, cd);
+
+        let single_pay_total: f64 = conn.query_row(
+            "SELECT COALESCE(SUM(amount), 0) FROM transactions
+             WHERE account_id = ?1 AND type = 'credit'
+             AND (total_installments IS NULL OR total_installments <= 1)
+             AND (
+               (CAST(strftime('%d', date) AS INTEGER) <= ?4 AND CAST(strftime('%m', date) AS INTEGER) = ?2 AND CAST(strftime('%Y', date) AS INTEGER) = ?3)
+               OR
+               (CAST(strftime('%d', date) AS INTEGER) > ?4 AND CAST(strftime('%m', date) AS INTEGER) = ?5 AND CAST(strftime('%Y', date) AS INTEGER) = ?6)
+             )",
+            rusqlite::params![account_id, curr_month, curr_year, cd, prev_month, prev_year],
+            |row| row.get(0),
+        ).map_err(|e| e.to_string())?;
+
+        let current_inst_total: f64 = conn.query_row(
+            "SELECT COALESCE(SUM(i.installment_amount), 0) FROM installments i
+             JOIN transactions t ON t.id = i.transaction_id
+             WHERE t.account_id = ?1 AND i.due_month = ?2 AND i.due_year = ?3 AND i.paid = 0",
+            rusqlite::params![account_id, curr_due_month, curr_due_year],
+            |row| row.get(0),
+        ).map_err(|e| e.to_string())?;
+
+        let current_invoice_total = single_pay_total + current_inst_total;
+
+        let future_inst_total: f64 = conn.query_row(
+            "SELECT COALESCE(SUM(i.installment_amount), 0) FROM installments i
+             JOIN transactions t ON t.id = i.transaction_id
+             WHERE t.account_id = ?1 AND i.paid = 0
+             AND (i.due_year > ?3 OR (i.due_year = ?3 AND i.due_month > ?2))",
+            rusqlite::params![account_id, curr_due_month, curr_due_year],
+            |row| row.get(0),
+        ).map_err(|e| e.to_string())?;
+
+        let balance: f64 = conn.query_row(
+            "SELECT COALESCE(balance, 0) FROM accounts WHERE id = ?1",
+            rusqlite::params![account_id],
+            |row| row.get(0),
+        ).map_err(|e| e.to_string())?;
+        let abs_balance = balance.abs();
+
+        let processing_total = (abs_balance - current_invoice_total - future_inst_total).max(0.0);
+
+        results.push(CreditUsage {
+            account_id,
+            account_name,
+            credit_limit: limit,
+            current_invoice_total,
+            future_invoices_total: future_inst_total,
+            processing_total,
+            total_used: abs_balance,
+            available: (limit - abs_balance).max(0.0),
+        });
+    }
+
+    Ok(results)
+}
+
+#[tauri::command]
+pub fn get_future_invoices(db: State<Database>, account_id: String) -> Result<Vec<FutureInvoiceGroup>, String> {
+    let conn = db.conn.lock().map_err(|e| e.to_string())?;
+
+    let closing_day: Option<i32> = conn.query_row(
+        "SELECT closing_day FROM accounts WHERE id = ?1",
+        rusqlite::params![account_id],
+        |row| row.get(0),
+    ).ok().flatten();
+
+    let today = chrono::Local::now();
+    let today_day = today.day() as i32;
+    let today_month = today.month() as i32;
+    let today_year = today.year();
+
+    let (curr_due_month, curr_due_year) = match closing_day {
+        Some(cd) if today_day > cd => {
+            if today_month == 12 { (1, today_year + 1) } else { (today_month + 1, today_year) }
+        }
+        _ => (today_month, today_year),
+    };
+
+    let mut stmt = conn.prepare(
+        "SELECT i.id, i.transaction_id, i.total_installments, i.installment_number, i.installment_amount,
+                i.due_month, i.due_year, i.paid,
+                t.description, c.name, c.color
+         FROM installments i
+         JOIN transactions t ON t.id = i.transaction_id
+         LEFT JOIN categories c ON c.id = t.category_id
+         WHERE t.account_id = ?1 AND i.paid = 0
+         AND (i.due_year > ?3 OR (i.due_year = ?3 AND i.due_month > ?2))
+         ORDER BY i.due_year, i.due_month, i.installment_number"
+    ).map_err(|e| e.to_string())?;
+
+    let installments: Vec<Installment> = stmt.query_map(
+        rusqlite::params![account_id, curr_due_month, curr_due_year],
+        |row| {
+            Ok(Installment {
+                id: row.get(0)?, transaction_id: row.get(1)?, total_installments: row.get(2)?,
+                installment_number: row.get(3)?, installment_amount: row.get(4)?,
+                due_month: row.get(5)?, due_year: row.get(6)?, paid: row.get::<_, i32>(7)? != 0,
+                description: row.get(8)?, category_name: row.get(9)?, category_color: row.get(10)?,
+            })
+        }
+    ).map_err(|e| e.to_string())?
+    .filter_map(|r| r.ok())
+    .collect();
+
+    // Group by due_month/due_year in Rust
+    let mut groups: std::collections::BTreeMap<(i32, i32), Vec<Installment>> = std::collections::BTreeMap::new();
+    for i in installments {
+        groups.entry((i.due_month, i.due_year)).or_default().push(i);
+    }
+
+    let result = groups.into_iter().map(|((dm, dy), insts)| {
+        let total: f64 = insts.iter().map(|i| i.installment_amount).sum();
+        FutureInvoiceGroup { due_month: dm, due_year: dy, total, installments: insts }
+    }).collect();
+
+    Ok(result)
+}
+
+#[tauri::command]
 pub fn get_invoice(db: State<Database>, account_id: String, month: i32, year: i32) -> Result<InvoiceData, String> {
     let conn = db.conn.lock().map_err(|e| e.to_string())?;
 

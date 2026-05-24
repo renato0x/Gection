@@ -6,7 +6,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { DonutChart } from '../components/DonutChart';
 import { useUI } from '../stores/useUI';
 import * as api from '../lib/api';
-import type { DashboardSummary, CategorySpending, MonthlyComparison, Transaction, TagSpending } from '../types';
+import type { DashboardSummary, CategorySpending, MonthlyComparison, Transaction, TagSpending, CreditUsage } from '../types';
 
 function sign(tx: Transaction): string {
   if (tx.transaction_type === 'income') return '+';
@@ -27,6 +27,7 @@ export function Dashboard() {
   const [recentTx, setRecentTx] = useState<Transaction[]>([]);
   const [tagSpending, setTagSpending] = useState<TagSpending[]>([]);
   const [chargesGenerated, setChargesGenerated] = useState(0);
+  const [creditUsage, setCreditUsage] = useState<CreditUsage[]>([]);
 
   useEffect(() => {
     api.getDashboardSummary(selectedMonth, selectedYear).then(setSummary);
@@ -34,6 +35,7 @@ export function Dashboard() {
     api.getMonthlyComparison(selectedYear).then(setMonthlyComparison);
     api.getTransactions({ month: selectedMonth, year: selectedYear }).then((tx) => setRecentTx(tx.slice(0, 5)));
     api.getTagSpending(selectedMonth, selectedYear).then(setTagSpending);
+    api.getCreditUsage().then(setCreditUsage);
     api.checkAndGenerateCharges().then(setChargesGenerated);
   }, [selectedMonth, selectedYear]);
 
@@ -41,8 +43,6 @@ export function Dashboard() {
 
   const balanco_mes = summary.receitas_realizadas - summary.despesas_debito;
   const renda_faltante = Math.max(0, summary.renda_esperada - summary.receitas_realizadas);
-  const creditPct = summary.total_credit_limit > 0
-    ? (summary.fatura_aberta / summary.total_credit_limit) * 100 : 0;
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -87,7 +87,7 @@ export function Dashboard() {
         </Card>
       </div>
 
-      {/* Row 2: Balance + Credit bar */}
+      {/* Row 2: Balance + Credit usage breakdown */}
       <div className="grid grid-cols-2 gap-4">
         <Card className="animate-slideUp">
           <div className="flex items-center justify-between">
@@ -106,21 +106,42 @@ export function Dashboard() {
           </div>
         </Card>
 
-        {summary.total_credit_limit > 0 && (
+        {creditUsage.length > 0 && creditUsage[0].credit_limit > 0 && (
           <Card className="animate-slideUp">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-violet-900/30"><CreditCard size={20} className="text-violet-400" /></div>
-              <div className="flex-1">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-400">Fatura Aberta</span>
-                  <span className="font-medium text-slate-300">{api.formatCurrency(summary.fatura_aberta)} / {api.formatCurrency(summary.total_credit_limit)}</span>
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Limite de Crédito</p>
+            {creditUsage.map((cu) => (
+              <div key={cu.account_id}>
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span className="text-slate-400">{cu.account_name}</span>
+                  <span className="text-slate-300 font-medium">{api.formatCurrency(cu.total_used)} / {api.formatCurrency(cu.credit_limit)}</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                  <div className={`h-full rounded-full transition-all duration-500 ${creditPct > 80 ? 'bg-rose-500' : creditPct > 60 ? 'bg-amber-500' : 'bg-violet-500'}`}
-                    style={{ width: `${Math.min(creditPct, 100)}%` }} />
+                <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-3">
+                  <div className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${Math.min((cu.total_used / cu.credit_limit) * 100, 100)}%`,
+                      background: 'linear-gradient(90deg, #818cf8, #c084fc)',
+                    }} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-[11px]">
+                  <div className="bg-slate-800/60 rounded-lg p-2">
+                    <p className="text-slate-500">Fatura atual</p>
+                    <p className="text-slate-200 font-medium">{api.formatCurrency(cu.current_invoice_total)}</p>
+                  </div>
+                  <div className="bg-slate-800/60 rounded-lg p-2">
+                    <p className="text-slate-500">Próx. faturas</p>
+                    <p className="text-amber-400 font-medium">{api.formatCurrency(cu.future_invoices_total)}</p>
+                  </div>
+                  <div className="bg-slate-800/60 rounded-lg p-2">
+                    <p className="text-slate-500">Em processamento</p>
+                    <p className="text-cyan-400 font-medium">{api.formatCurrency(cu.processing_total)}</p>
+                  </div>
+                </div>
+                <div className="flex justify-between text-xs mt-2 pt-2 border-t border-slate-700/50">
+                  <span className="text-slate-500">Disponível</span>
+                  <span className="text-emerald-400 font-semibold">{api.formatCurrency(cu.available)}</span>
                 </div>
               </div>
-            </div>
+            ))}
           </Card>
         )}
       </div>

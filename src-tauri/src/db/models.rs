@@ -401,3 +401,23 @@ pub struct InvoiceData {
     pub current_installments: Vec<Installment>,
     pub installments_due: Vec<Installment>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreditUsage {
+    pub account_id: String,
+    pub account_name: String,
+    pub credit_limit: f64,
+    pub current_invoice_total: f64,
+    pub future_invoices_total: f64,
+    pub processing_total: f64,
+    pub total_used: f64,
+    pub available: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FutureInvoiceGroup {
+    pub due_month: i32,
+    pub due_year: i32,
+    pub total: f64,
+    pub installments: Vec<Installment>,
+}

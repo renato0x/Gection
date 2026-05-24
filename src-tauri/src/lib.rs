@@ -49,6 +49,8 @@ pub fn run() {
             commands::dashboard::get_monthly_comparison,
             commands::dashboard::get_tag_spending,
             commands::invoice::get_invoice,
+            commands::invoice::get_credit_usage,
+            commands::invoice::get_future_invoices,
             commands::income::get_income_sources,
             commands::income::create_income_source,
             commands::income::update_income_source,
