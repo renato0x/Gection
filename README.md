@@ -82,10 +82,19 @@ Fonte              Inter
 
 ## Instalação
 
-```bash
-# Pré-requisitos: Node.js 18+, Rust stable toolchain, dependências Tauri
-# Veja: https://v2.tauri.app/start/prerequisites/
+### Linux (Ubuntu/Debian)
 
+```bash
+# Dependências do sistema para Tauri no Linux
+sudo apt install libwebkit2gtk-4.1-dev libgtk-3-dev libappindicator3-dev \
+  librsvg2-dev patchelf libsoup-3.0-dev libjavascriptcoregtk-4.1-dev
+
+# Node.js 18+ e Rust (toolchain stable) também são necessários
+```
+
+### Todas as plataformas
+
+```bash
 git clone https://github.com/renato0x/gection.git
 cd gection
 npm install
@@ -93,7 +102,7 @@ npm run tauri dev     # desenvolvimento
 npm run tauri build   # produção
 ```
 
-O banco de dados SQLite é criado automaticamente. Nenhuma configuração manual necessária.
+O banco de dados SQLite é criado automaticamente na primeira execução. Nenhuma configuração manual necessária.
 
 <br />
 
