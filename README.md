@@ -82,27 +82,131 @@ Fonte              Inter
 
 ## Instalação
 
-### Linux (Ubuntu/Debian)
+### Windows
 
-```bash
-# Dependências do sistema para Tauri no Linux
-sudo apt install libwebkit2gtk-4.1-dev libgtk-3-dev libappindicator3-dev \
-  librsvg2-dev patchelf libsoup-3.0-dev libjavascriptcoregtk-4.1-dev
+**Passo 1 — Instalar Node.js**
 
-# Node.js 18+ e Rust (toolchain stable) também são necessários
+Baixe e instale o Node.js 18 ou superior em [nodejs.org](https://nodejs.org).  
+O npm já vem junto.
+
+**Passo 2 — Instalar Rust**
+
+Abra o PowerShell como Administrador e cole:
+
+```powershell
+# Isso baixa e instala o Rust (toolchain stable)
+winget install Rustlang.Rustup
+# ou, se preferir: https://rustup.rs
 ```
 
-### Todas as plataformas
+Depois de instalado, feche e reabra o terminal. Confirme que funcionou:
+
+```powershell
+node --version    # deve mostrar v18 ou maior
+npm --version     # deve mostrar 10 ou maior
+rustc --version   # deve mostrar 1.77 ou maior
+```
+
+**Passo 3 — WebView2**
+
+O Windows 10/11 já vem com o WebView2 instalado.  
+Se estiver no Windows 8 ou inferior, baixe em [developer.microsoft.com](https://developer.microsoft.com/pt-br/microsoft-edge/webview2/).
+
+**Passo 4 — Baixar e rodar o Gection**
+
+```powershell
+git clone https://github.com/renato0x/gection.git
+cd gection
+npm install
+npm run tauri dev
+```
+
+> Para compilar a versão final (instalador .msi ou .exe):
+> ```powershell
+> npm run tauri build
+> ```
+
+---
+
+### Linux (Ubuntu/Debian)
+
+**Passo 1 — Instalar as dependências do sistema**
+
+```bash
+sudo apt update
+sudo apt install -y \
+  libwebkit2gtk-4.1-dev \
+  libgtk-3-dev \
+  libappindicator3-dev \
+  librsvg2-dev \
+  patchelf \
+  libsoup-3.0-dev \
+  libjavascriptcoregtk-4.1-dev \
+  build-essential \
+  curl \
+  wget \
+  file
+```
+
+**Passo 2 — Instalar Node.js**
+
+```bash
+# Opção recomendada: usar nvm (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+# Feche e abra o terminal, ou rode:
+source ~/.bashrc
+nvm install 22
+nvm use 22
+```
+
+> Alternativa via apt:
+> ```bash
+> sudo apt install -y nodejs npm
+> ```
+
+**Passo 3 — Instalar Rust**
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Escolha a opção padrão (1)
+source ~/.bashrc
+```
+
+**Passo 4 — Confirmar as instalações**
+
+```bash
+node --version    # v18 ou maior
+npm --version     # 10 ou maior
+rustc --version   # 1.77 ou maior
+```
+
+**Passo 5 — Baixar e rodar o Gection**
 
 ```bash
 git clone https://github.com/renato0x/gection.git
 cd gection
 npm install
-npm run tauri dev     # desenvolvimento
-npm run tauri build   # produção
+npm run tauri dev
 ```
 
-O banco de dados SQLite é criado automaticamente na primeira execução. Nenhuma configuração manual necessária.
+> Para compilar a versão final (.deb ou AppImage):
+> ```bash
+> npm run tauri build
+> ```
+
+---
+
+### Outras distribuições Linux
+
+| Distribuição | Comando |
+|---|---|
+| **Fedora** | `sudo dnf install webkit2gtk4.1-devel gtk3-devel libappindicator-gtk3-devel librsvg2-devel patchelf libsoup3-devel javascriptcoregtk4.1-devel` |
+| **Arch** | `sudo pacman -S webkit2gtk-4.1 gtk3 libappindicator-gtk3 librsvg patchelf libsoup3 javascriptcoregtk4.1` |
+| **openSUSE** | `sudo zypper install webkit2gtk-4.1-devel gtk3-devel libappindicator3-devel librsvg2-devel patchelf libsoup3-devel javascriptcoregtk4.1-devel` |
+
+---
+
+Tudo pronto. O banco SQLite é criado automaticamente na primeira execução — zero configuração manual.
 
 <br />
 
