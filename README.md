@@ -49,14 +49,17 @@
 | **Assinaturas** | Cobranças recorrentes com geração automática de transações na data correta |
 | **Acertos** | Controle de valores emprestados e recebidos com writeoffs, transações vinculadas e pessoas reutilizáveis |
 | **Fontes de Renda** | Registro de entradas fixas e variáveis para cálculo de renda esperada |
-| **Calendário** | Visão mensal com saldo acumulado por dia — apenas dados reais, sem projeção futura |
+| **Calendário** | Visão mensal com saldo acumulado por dia |
 
 <br />
 
 ## Diferenciais
 
 - **100% offline e privado** — seus dados nunca saem da sua máquina. Sem cadastro, sem nuvem, sem telemetria.
+<<<<<<< HEAD
 - **Banco SQLite portátil** — o arquivo `gection.db` fica em `Documentos/Gection/`, fácil de localizar, copiar e transferir para outra máquina.
+=======
+>>>>>>> 3e710b673d6cfba6e1ecee65b26de1012032a749
 - **Experimento desktop nativo** — construído com Tauri + Rust, entregando performance de aplicação real sem depender de navegador.
 - **Tema escuro consistente** — interface dark única, pensada para longas sessões de uso sem cansar a visão.
 - **Ciclo real de cartão de crédito** — lógica de fechamento e vencimento que respeita o funcionamento real de faturas.
@@ -128,16 +131,17 @@ npm run tauri dev
 
 ---
 
-### Linux (Ubuntu/Debian)
+### Linux (Zorin OS / Ubuntu / Debian)
 
 **Passo 1 — Instalar as dependências do sistema**
+
+Zorin OS, Ubuntu, Debian e derivados usam o mesmo gerenciador de pacotes (apt):
 
 ```bash
 sudo apt update
 sudo apt install -y \
   libwebkit2gtk-4.1-dev \
   libgtk-3-dev \
-  libappindicator3-dev \
   librsvg2-dev \
   patchelf \
   libsoup-3.0-dev \
@@ -147,6 +151,11 @@ sudo apt install -y \
   wget \
   file
 ```
+
+> No Zorin OS 16+ e Ubuntu 22.04+, o pacote `libappindicator3-dev` foi substituído por `libayatana-appindicator3-dev`. Instale-o separadamente se precisar de bandeja de sistema:
+> ```bash
+> sudo apt install -y libayatana-appindicator3-dev
+> ```
 
 **Passo 2 — Instalar Node.js**
 
@@ -207,6 +216,8 @@ npm run tauri dev
 ---
 
 Tudo pronto. O banco SQLite (`gection.db`) é criado automaticamente na pasta **Documentos/Gection/** na primeira execução. Para migrar seus dados para outro computador, basta copiar esse arquivo.
+
+<br />
 
 <br />
 
