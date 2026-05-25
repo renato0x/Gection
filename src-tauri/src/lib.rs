@@ -13,7 +13,7 @@ pub fn run() {
                 .build(),
         )
         .setup(|app| {
-            let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+            let app_dir = app.path().document_dir().map_err(|e| e.to_string())?.join("Gection");
             std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
             let db_path = app_dir.join("gection.db");
             let db = Database::new(&db_path).map_err(|e| e.to_string())?;

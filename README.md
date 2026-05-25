@@ -56,7 +56,7 @@
 ## Diferenciais
 
 - **100% offline e privado** — seus dados nunca saem da sua máquina. Sem cadastro, sem nuvem, sem telemetria.
-- **Banco local SQLite** — cada instância tem seu próprio banco, criado automaticamente na primeira execução.
+- **Banco SQLite portátil** — o arquivo `gection.db` fica em `Documentos/Gection/`, fácil de localizar, copiar e transferir para outra máquina.
 - **Experimento desktop nativo** — construído com Tauri + Rust, entregando performance de aplicação real sem depender de navegador.
 - **Tema escuro consistente** — interface dark única, pensada para longas sessões de uso sem cansar a visão.
 - **Ciclo real de cartão de crédito** — lógica de fechamento e vencimento que respeita o funcionamento real de faturas.
@@ -206,7 +206,7 @@ npm run tauri dev
 
 ---
 
-Tudo pronto. O banco SQLite é criado automaticamente na primeira execução — zero configuração manual.
+Tudo pronto. O banco SQLite (`gection.db`) é criado automaticamente na pasta **Documentos/Gection/** na primeira execução. Para migrar seus dados para outro computador, basta copiar esse arquivo.
 
 <br />
 
