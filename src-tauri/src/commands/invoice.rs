@@ -144,8 +144,17 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
             (today_month, today_year)
         };
 
-        let (curr_month, curr_year, prev_month, prev_year) = invoice_period(curr_due_month, curr_due_year, cd);
+        // Next due month = the month AFTER the current invoice
+        let (next_due_month, next_due_year) = if curr_due_month == 12 {
+            (1, curr_due_year + 1)
+        } else {
+            (curr_due_month + 1, curr_due_year)
+        };
 
+        let (curr_month, curr_year, prev_month, prev_year) = invoice_period(curr_due_month, curr_due_year, cd);
+        let (next_curr_month, next_curr_year, next_prev_month, next_prev_year) = invoice_period(next_due_month, next_due_year, cd);
+
+        // 1. Current invoice: single-pay transactions in the current closing cycle
         let single_pay_total: f64 = conn.query_row(
             "SELECT COALESCE(SUM(amount), 0) FROM transactions
              WHERE account_id = ?1 AND type = 'credit'
@@ -159,6 +168,7 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
             |row| row.get(0),
         ).map_err(|e| e.to_string())?;
 
+        // 2. Installments due THIS month
         let current_inst_total: f64 = conn.query_row(
             "SELECT COALESCE(SUM(i.installment_amount), 0) FROM installments i
              JOIN transactions t ON t.id = i.transaction_id
@@ -169,6 +179,7 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
 
         let current_invoice_total = single_pay_total + current_inst_total;
 
+        // 3. Future installments (due after current invoice month)
         let future_inst_total: f64 = conn.query_row(
             "SELECT COALESCE(SUM(i.installment_amount), 0) FROM installments i
              JOIN transactions t ON t.id = i.transaction_id
@@ -178,14 +189,24 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
             |row| row.get(0),
         ).map_err(|e| e.to_string())?;
 
-        let balance: f64 = conn.query_row(
-            "SELECT COALESCE(balance, 0) FROM accounts WHERE id = ?1",
-            rusqlite::params![account_id],
+        // 4. Processing: single-pay transactions in the NEXT open cycle
+        // These are purchases made after the current closing day (will appear on the next invoice)
+        let processing_total: f64 = conn.query_row(
+            "SELECT COALESCE(SUM(amount), 0) FROM transactions
+             WHERE account_id = ?1 AND type = 'credit'
+             AND (total_installments IS NULL OR total_installments <= 1)
+             AND (
+               (CAST(strftime('%d', date) AS INTEGER) <= ?4 AND CAST(strftime('%m', date) AS INTEGER) = ?2 AND CAST(strftime('%Y', date) AS INTEGER) = ?3)
+               OR
+               (CAST(strftime('%d', date) AS INTEGER) > ?4 AND CAST(strftime('%m', date) AS INTEGER) = ?5 AND CAST(strftime('%Y', date) AS INTEGER) = ?6)
+             )",
+            rusqlite::params![account_id, next_curr_month, next_curr_year, cd, next_prev_month, next_prev_year],
             |row| row.get(0),
         ).map_err(|e| e.to_string())?;
-        let abs_balance = balance.abs();
 
-        let processing_total = (abs_balance - current_invoice_total - future_inst_total).max(0.0);
+        // total_used is the sum of all three independently computed parts
+        let total_used = current_invoice_total + future_inst_total + processing_total;
+        let available = (limit - total_used).max(0.0);
 
         results.push(CreditUsage {
             account_id,
@@ -194,8 +215,8 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
             current_invoice_total,
             future_invoices_total: future_inst_total,
             processing_total,
-            total_used: abs_balance,
-            available: (limit - abs_balance).max(0.0),
+            total_used,
+            available,
         });
     }
 
