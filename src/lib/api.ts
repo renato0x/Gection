@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import type {
-  Account, Category, Transaction, Tag, Budget, BudgetOverview,
+  Account, AccountMonthlyStats, Category, Transaction, Tag, Budget, BudgetOverview,
   DashboardSummary, CategorySpending, MonthlyComparison, InvoiceData,
   CreditUsage, FutureInvoiceGroup,
   IncomeSource, CreateIncomeSourceData, UpdateIncomeSourceData,
@@ -17,6 +17,9 @@ import type {
 
 export function getAccounts(): Promise<Account[]> {
   return invoke('get_accounts');
+}
+export function getAccountMonthlyStats(month: number, year: number): Promise<AccountMonthlyStats[]> {
+  return invoke('get_account_monthly_stats', { month, year });
 }
 export function createAccount(data: CreateAccountData): Promise<Account> {
   return invoke('create_account', { data });

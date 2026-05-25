@@ -144,15 +144,7 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
             (today_month, today_year)
         };
 
-        // Next due month = the month AFTER the current invoice
-        let (next_due_month, next_due_year) = if curr_due_month == 12 {
-            (1, curr_due_year + 1)
-        } else {
-            (curr_due_month + 1, curr_due_year)
-        };
-
         let (curr_month, curr_year, prev_month, prev_year) = invoice_period(curr_due_month, curr_due_year, cd);
-        let (next_curr_month, next_curr_year, next_prev_month, next_prev_year) = invoice_period(next_due_month, next_due_year, cd);
 
         // 1. Current invoice: single-pay transactions in the current closing cycle
         let single_pay_total: f64 = conn.query_row(
@@ -189,9 +181,15 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
             |row| row.get(0),
         ).map_err(|e| e.to_string())?;
 
-        // 4. Processing: single-pay transactions in the NEXT open cycle
-        // These are purchases made after the current closing day (will appear on the next invoice)
-        let processing_total: f64 = conn.query_row(
+        // 4. Next-cycle single-pay: purchases that will appear on the next invoice
+        let (next_due_month, next_due_year) = if curr_due_month == 12 {
+            (1, curr_due_year + 1)
+        } else {
+            (curr_due_month + 1, curr_due_year)
+        };
+        let (next_curr_month, next_curr_year, next_prev_month, next_prev_year) = invoice_period(next_due_month, next_due_year, cd);
+
+        let next_cycle_single_pay: f64 = conn.query_row(
             "SELECT COALESCE(SUM(amount), 0) FROM transactions
              WHERE account_id = ?1 AND type = 'credit'
              AND (total_installments IS NULL OR total_installments <= 1)
@@ -204,8 +202,12 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
             |row| row.get(0),
         ).map_err(|e| e.to_string())?;
 
-        // total_used is the sum of all three independently computed parts
-        let total_used = current_invoice_total + future_inst_total + processing_total;
+        // 5. Processing: not used — every transaction is immediately assigned to a cycle
+        // (current or future), so there is no "authorized but not posted" state.
+        let processing_total: f64 = 0.0;
+
+        let future_invoices_total = future_inst_total + next_cycle_single_pay;
+        let total_used = current_invoice_total + future_invoices_total + processing_total;
         let available = (limit - total_used).max(0.0);
 
         results.push(CreditUsage {
@@ -213,7 +215,7 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
             account_name,
             credit_limit: limit,
             current_invoice_total,
-            future_invoices_total: future_inst_total,
+            future_invoices_total,
             processing_total,
             total_used,
             available,

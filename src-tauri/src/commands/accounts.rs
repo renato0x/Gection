@@ -56,6 +56,35 @@ pub fn update_account(db: State<Database>, data: UpdateAccount) -> Result<(), St
 }
 
 #[tauri::command]
+pub fn get_account_monthly_stats(db: State<Database>, month: i32, year: i32) -> Result<Vec<AccountMonthlyStats>, String> {
+    let conn = db.conn.lock().map_err(|e| e.to_string())?;
+    let mut stmt = conn.prepare(
+        "SELECT a.id,
+                COALESCE((SELECT SUM(t.amount) FROM transactions t WHERE t.account_id = a.id AND t.transaction_type = 'income' AND CAST(strftime('%m', t.date) AS INTEGER) = ?1 AND CAST(strftime('%Y', t.date) AS INTEGER) = ?2), 0),
+                COALESCE((SELECT SUM(t.amount) FROM transactions t WHERE t.account_id = a.id AND t.transaction_type = 'expense' AND CAST(strftime('%m', t.date) AS INTEGER) = ?1 AND CAST(strftime('%Y', t.date) AS INTEGER) = ?2), 0),
+                (SELECT t.date FROM transactions t WHERE t.account_id = a.id ORDER BY t.date DESC, t.created_at DESC LIMIT 1),
+                (SELECT t.amount FROM transactions t WHERE t.account_id = a.id ORDER BY t.date DESC, t.created_at DESC LIMIT 1)
+         FROM accounts a
+         WHERE a.type != 'credit'
+         ORDER BY a.created_at"
+    ).map_err(|e| e.to_string())?;
+
+    let stats = stmt.query_map(rusqlite::params![month, year], |row| {
+        Ok(AccountMonthlyStats {
+            account_id: row.get(0)?,
+            month_income: row.get(1)?,
+            month_expense: row.get(2)?,
+            last_tx_date: row.get(3)?,
+            last_tx_amount: row.get(4)?,
+        })
+    }).map_err(|e| e.to_string())?
+    .filter_map(|r| r.ok())
+    .collect();
+
+    Ok(stats)
+}
+
+#[tauri::command]
 pub fn delete_account(db: State<Database>, id: String) -> Result<(), String> {
     let conn = db.conn.lock().map_err(|e| e.to_string())?;
     conn.execute("DELETE FROM accounts WHERE id = ?1", rusqlite::params![id])

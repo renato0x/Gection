@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { Plus, Search, Edit2, Trash2, Filter, Calendar } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
@@ -44,6 +44,7 @@ export function Transactions() {
   const { accounts, load: loadAccounts } = useAccounts();
   const { categories, load: loadCategories } = useCategories();
   const { transactions, loading, load, create, update, remove } = useTransactions();
+  const locationState = useLocation().state as { focusAccountId?: string } | null;
   const [showCalendar, setShowCalendar] = useState(false);
 
   const [filterSearch, setFilterSearch] = useState('');
@@ -66,6 +67,14 @@ export function Transactions() {
   }, [selectedMonth, selectedYear, filterAccount, filterCategory, filterSearch, filterType, load]);
 
   useEffect(() => { loadAccounts(); loadCategories(); api.getTags().then(setTags); }, [loadAccounts, loadCategories]);
+
+  useEffect(() => {
+    if (locationState?.focusAccountId) {
+      setFilterAccount(locationState.focusAccountId);
+      window.history.replaceState({}, document.title);
+    }
+  }, [locationState?.focusAccountId]);
+
   useEffect(() => { loadData(); }, [loadData]);
 
   const expenseCats = categories.filter((c) => c.type === 'expense');

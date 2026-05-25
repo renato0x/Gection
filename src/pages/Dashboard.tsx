@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, Wallet, CreditCard, PiggyBank, Tag, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, CreditCard, PiggyBank, Tag, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { Card } from '../components/ui/Card';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -90,18 +90,32 @@ export function Dashboard() {
       {/* Row 2: Balance + Credit usage breakdown */}
       <div className="grid grid-cols-2 gap-4">
         <Card className="animate-slideUp">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className={`p-2 rounded-lg ${balanco_mes >= 0 ? 'bg-emerald-900/30' : 'bg-rose-900/30'}`}>
-                <DollarSign size={20} className={balanco_mes >= 0 ? 'text-emerald-400' : 'text-rose-400'} />
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Balanço do Mês</p>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 p-2.5 rounded-lg bg-emerald-900/15">
+              <div className="flex items-center gap-1">
+                <TrendingUp size={12} className="text-emerald-400" />
+                <span className="text-[10px] font-semibold text-emerald-400">{api.formatCurrency(summary.receitas_realizadas)}</span>
               </div>
-              <div>
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Balanço do Mês</p>
-                <p className="text-xs text-slate-500">Receitas - Despesas à Vista</p>
-              </div>
+              <p className="text-[9px] text-slate-500 mt-0.5">Receitas</p>
             </div>
-            <p className={`text-lg font-bold ${balanco_mes >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <div className="flex-1 p-2.5 rounded-lg bg-rose-900/15">
+              <div className="flex items-center gap-1">
+                <TrendingDown size={12} className="text-rose-400" />
+                <span className="text-[10px] font-semibold text-rose-400">{api.formatCurrency(summary.despesas_debito)}</span>
+              </div>
+              <p className="text-[9px] text-slate-500 mt-0.5">Despesas</p>
+            </div>
+          </div>
+          <div className={`mt-3 p-2.5 rounded-lg text-center ${balanco_mes >= 0 ? 'bg-emerald-900/20' : 'bg-rose-900/20'}`}>
+            <p className={`text-sm font-bold ${balanco_mes >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
               {api.formatCurrency(balanco_mes)}
+            </p>
+            <p className="text-[10px] text-slate-500 mt-0.5">
+              <span className="text-[9px] text-slate-600">Receitas - Despesas à Vista</span>
+              {summary.despesas_credito > 0 && (
+                <span className="ml-2">💳 crédito: {api.formatCurrency(summary.despesas_credito)}</span>
+              )}
             </p>
           </div>
         </Card>

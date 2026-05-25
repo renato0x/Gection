@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Plus, ArrowUpRight, ArrowDownLeft, CheckCircle2, Calculator, X, Trash2, Save, Pencil, Search, History, User } from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownLeft, CheckCircle2, Calculator, ChevronRight, X, Trash2, Save, Pencil, Search, History, User } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Modal } from '../components/ui/Modal';
@@ -34,6 +34,7 @@ export function Settlements() {
   const [writeoffOpen, setWriteoffOpen] = useState(false);
   const [personHistoryOpen, setPersonHistoryOpen] = useState(false);
   const [showCalc, setShowCalc] = useState<'create' | 'writeoff' | null>(null);
+  const [showResolved, setShowResolved] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<CreatePersonSettlementData>(emptyForm);
@@ -81,13 +82,8 @@ export function Settlements() {
     setAccounts(await api.getAccounts());
   }
 
-  const filtered = settlements.filter((s) => {
-    if (filter === 'lent') return s.settlement_type === 'lent';
-    if (filter === 'borrowed') return s.settlement_type === 'borrowed';
-    if (filter === 'open') return s.status === 'open';
-    if (filter === 'resolved') return s.status === 'resolved';
-    return true;
-  });
+  const openSettlements = settlements.filter((s) => s.status === 'open');
+  const resolvedSettlements = settlements.filter((s) => s.status === 'resolved');
 
   const totalLent = settlements.filter((s) => s.settlement_type === 'lent' && s.status === 'open').reduce((a, b) => a + b.current_amount, 0);
   const totalBorrowed = settlements.filter((s) => s.settlement_type === 'borrowed' && s.status === 'open').reduce((a, b) => a + b.current_amount, 0);
@@ -257,13 +253,11 @@ export function Settlements() {
         ))}
       </div>
 
-      {/* List */}
-      {filtered.length === 0 ? (
-        <EmptyState title="Nenhum acerto encontrado" description="Cadastre um novo acerto para começar" />
-      ) : (
+      {/* Open settlements */}
+      {openSettlements.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {filtered.map((s) => (
-            <Card key={s.id} className={`!p-4 cursor-pointer hover:border-slate-600 transition-colors ${s.status === 'resolved' ? 'opacity-60' : ''}`}
+          {openSettlements.map((s) => (
+            <Card key={s.id} className="!p-4 cursor-pointer hover:border-slate-600 transition-colors"
               onClick={() => openDetail(s)}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
@@ -275,10 +269,7 @@ export function Settlements() {
                       : <ArrowDownLeft size={18} className="text-rose-400" />}
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-slate-200 truncate">{s.person_name}</span>
-                      {s.status === 'resolved' && <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />}
-                    </div>
+                    <span className="text-sm font-semibold text-slate-200 truncate block">{s.person_name}</span>
                     <p className="text-xs text-slate-500 truncate mt-0.5">{s.description || 'Sem descrição'}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className={`text-[10px] font-medium ${
@@ -296,12 +287,63 @@ export function Settlements() {
                   <p className={`text-sm font-bold ${s.settlement_type === 'lent' ? 'text-emerald-400' : 'text-rose-400'}`}>
                     {api.formatCurrency(s.current_amount)}
                   </p>
-                  <p className="text-[10px] text-slate-500">de {api.formatCurrency(s.original_amount)}</p>
+                  {s.current_amount < s.original_amount && (
+                    <p className="text-[10px] text-slate-500">de {api.formatCurrency(s.original_amount)}</p>
+                  )}
                 </div>
               </div>
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Resolved / History section */}
+      {resolvedSettlements.length > 0 && (
+        <Card className="animate-slideUp">
+          <button onClick={() => setShowResolved(!showResolved)} className="w-full flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={16} className="text-emerald-400" />
+              <span className="text-sm font-semibold text-slate-300">Histórico</span>
+              <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full">{resolvedSettlements.length} quitados</span>
+            </div>
+            <ChevronRight size={16} className={`text-slate-500 transition-transform ${showResolved ? 'rotate-90' : ''}`} />
+          </button>
+
+          {showResolved && (
+            <div className="mt-3 space-y-2">
+              {resolvedSettlements.map((s) => (
+                <div key={s.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-800/40 cursor-pointer hover:bg-slate-800/60 transition-colors"
+                  onClick={() => openDetail(s)}>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center ${
+                      s.settlement_type === 'lent' ? 'bg-emerald-900/20' : 'bg-rose-900/20'
+                    }`}>
+                      {s.settlement_type === 'lent'
+                        ? <ArrowUpRight size={14} className="text-emerald-600" />
+                        : <ArrowDownLeft size={14} className="text-rose-600" />}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-xs font-medium text-slate-400 line-through decoration-slate-500 block">{s.person_name}</span>
+                      <p className="text-[10px] text-slate-600 truncate">{s.description || 'Sem descrição'}</p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className={`text-xs font-medium line-through decoration-slate-500 ${
+                      s.settlement_type === 'lent' ? 'text-emerald-600' : 'text-rose-600'
+                    }`}>
+                      {api.formatCurrency(s.original_amount)}
+                    </p>
+                    <p className="text-[10px] text-emerald-600">{api.parseDate(s.date)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
+
+      {openSettlements.length === 0 && resolvedSettlements.length === 0 && (
+        <EmptyState title="Nenhum acerto encontrado" description="Cadastre um novo acerto para começar" />
       )}
 
       {/* Detail Modal */}

@@ -10,6 +10,14 @@ export interface Account {
   created_at: string;
 }
 
+export interface AccountMonthlyStats {
+  account_id: string;
+  month_income: number;
+  month_expense: number;
+  last_tx_date: string | null;
+  last_tx_amount: number | null;
+}
+
 export interface Category {
   id: string;
   name: string;

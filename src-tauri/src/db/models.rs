@@ -415,6 +415,15 @@ pub struct CreditUsage {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct AccountMonthlyStats {
+    pub account_id: String,
+    pub month_income: f64,
+    pub month_expense: f64,
+    pub last_tx_date: Option<String>,
+    pub last_tx_amount: Option<f64>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct FutureInvoiceGroup {
     pub due_month: i32,
     pub due_year: i32,
