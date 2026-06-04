@@ -289,7 +289,7 @@ pub fn update_transaction(db: State<Database>, data: UpdateTransaction) -> Resul
             |row| row.get::<_, Option<i32>>(0),
         ).ok().flatten()
     } else { None };
-    if inst > 0 {
+    if inst > 1 {
         let inst_amount = data.amount / inst as f64;
         create_installments(&conn, &data.id, inst, inst_amount, &data.date, closing_day)?;
     }

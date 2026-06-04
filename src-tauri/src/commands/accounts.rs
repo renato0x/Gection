@@ -60,8 +60,8 @@ pub fn get_account_monthly_stats(db: State<Database>, month: i32, year: i32) -> 
     let conn = db.conn.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn.prepare(
         "SELECT a.id,
-                COALESCE((SELECT SUM(t.amount) FROM transactions t WHERE t.account_id = a.id AND t.transaction_type = 'income' AND CAST(strftime('%m', t.date) AS INTEGER) = ?1 AND CAST(strftime('%Y', t.date) AS INTEGER) = ?2), 0),
-                COALESCE((SELECT SUM(t.amount) FROM transactions t WHERE t.account_id = a.id AND t.transaction_type = 'expense' AND CAST(strftime('%m', t.date) AS INTEGER) = ?1 AND CAST(strftime('%Y', t.date) AS INTEGER) = ?2), 0),
+                COALESCE((SELECT SUM(t.amount) FROM transactions t WHERE t.account_id = a.id AND t.type = 'income' AND CAST(strftime('%m', t.date) AS INTEGER) = ?1 AND CAST(strftime('%Y', t.date) AS INTEGER) = ?2), 0),
+                COALESCE((SELECT SUM(t.amount) FROM transactions t WHERE t.account_id = a.id AND t.type = 'expense' AND CAST(strftime('%m', t.date) AS INTEGER) = ?1 AND CAST(strftime('%Y', t.date) AS INTEGER) = ?2), 0),
                 (SELECT t.date FROM transactions t WHERE t.account_id = a.id ORDER BY t.date DESC, t.created_at DESC LIMIT 1),
                 (SELECT t.amount FROM transactions t WHERE t.account_id = a.id ORDER BY t.date DESC, t.created_at DESC LIMIT 1)
          FROM accounts a

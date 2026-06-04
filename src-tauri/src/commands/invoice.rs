@@ -254,7 +254,7 @@ pub fn get_future_invoices(db: State<Database>, account_id: String) -> Result<Ve
          FROM installments i
          JOIN transactions t ON t.id = i.transaction_id
          LEFT JOIN categories c ON c.id = t.category_id
-         WHERE t.account_id = ?1 AND i.paid = 0
+         WHERE t.account_id = ?1 AND t.total_installments > 1 AND i.paid = 0
          AND (i.due_year > ?3 OR (i.due_year = ?3 AND i.due_month > ?2))
          ORDER BY i.due_year, i.due_month, i.installment_number"
     ).map_err(|e| e.to_string())?;
