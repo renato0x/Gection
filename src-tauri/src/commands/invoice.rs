@@ -164,7 +164,7 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
         let current_inst_total: f64 = conn.query_row(
             "SELECT COALESCE(SUM(i.installment_amount), 0) FROM installments i
              JOIN transactions t ON t.id = i.transaction_id
-             WHERE t.account_id = ?1 AND i.due_month = ?2 AND i.due_year = ?3 AND i.paid = 0",
+             WHERE t.account_id = ?1 AND t.total_installments > 1 AND i.due_month = ?2 AND i.due_year = ?3 AND i.paid = 0",
             rusqlite::params![account_id, curr_due_month, curr_due_year],
             |row| row.get(0),
         ).map_err(|e| e.to_string())?;
@@ -175,7 +175,7 @@ pub fn get_credit_usage(db: State<Database>) -> Result<Vec<CreditUsage>, String>
         let future_inst_total: f64 = conn.query_row(
             "SELECT COALESCE(SUM(i.installment_amount), 0) FROM installments i
              JOIN transactions t ON t.id = i.transaction_id
-             WHERE t.account_id = ?1 AND i.paid = 0
+             WHERE t.account_id = ?1 AND t.total_installments > 1 AND i.paid = 0
              AND (i.due_year > ?3 OR (i.due_year = ?3 AND i.due_month > ?2))",
             rusqlite::params![account_id, curr_due_month, curr_due_year],
             |row| row.get(0),

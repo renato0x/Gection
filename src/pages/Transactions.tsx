@@ -284,7 +284,7 @@ export function Transactions() {
 
           <Select label="Conta" options={accounts.map((a) => ({ value: a.id, label: `${a.name}${a.type === 'credit' ? ' 💳' : ''}` }))}
             value={form.account_id}
-            onChange={(e) => setForm((f) => ({ ...f, account_id: e.target.value, total_installments: accounts.find((a) => a.id === e.target.value)?.type === 'credit' ? 1 : null }))} />
+            onChange={(e) => setForm((f) => ({ ...f, account_id: e.target.value }))} />
 
           <Select label="Categoria" options={[{ value: '', label: 'Sem categoria' }, ...filteredCats.map((c) => ({ value: c.id, label: c.name }))]}
             value={form.category_id || ''}

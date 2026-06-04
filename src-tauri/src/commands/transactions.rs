@@ -206,14 +206,14 @@ pub fn create_transaction(db: State<Database>, data: CreateTransaction) -> Resul
     }
 
     let tags = load_tags(&conn, &id)?;
-    let closing_day = if data.transaction_type == "credit" && inst > 0 {
+    let closing_day = if data.transaction_type == "credit" && inst > 1 {
         conn.query_row(
             "SELECT closing_day FROM accounts WHERE id = ?1",
             rusqlite::params![data.account_id],
             |row| row.get::<_, Option<i32>>(0),
         ).ok().flatten()
     } else { None };
-    let installments = if inst > 0 {
+    let installments = if inst > 1 {
         let inst_amount = data.amount / inst as f64;
         create_installments(&conn, &id, inst, inst_amount, &data.date, closing_day)?
     } else {
@@ -282,7 +282,7 @@ pub fn update_transaction(db: State<Database>, data: UpdateTransaction) -> Resul
 
     conn.execute("DELETE FROM installments WHERE transaction_id = ?1", rusqlite::params![data.id])
         .map_err(|e| e.to_string())?;
-    let closing_day = if data.transaction_type == "credit" && inst > 0 {
+    let closing_day = if data.transaction_type == "credit" && inst > 1 {
         conn.query_row(
             "SELECT closing_day FROM accounts WHERE id = ?1",
             rusqlite::params![data.account_id],

@@ -90,34 +90,14 @@ export function Dashboard() {
       {/* Row 2: Balance + Credit usage breakdown */}
       <div className="grid grid-cols-2 gap-4">
         <Card className="animate-slideUp">
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Balanço do Mês</p>
-          <div className="flex items-center gap-3">
-            <div className="flex-1 p-2.5 rounded-lg bg-emerald-900/15">
-              <div className="flex items-center gap-1">
-                <TrendingUp size={12} className="text-emerald-400" />
-                <span className="text-[10px] font-semibold text-emerald-400">{api.formatCurrency(summary.receitas_realizadas)}</span>
-              </div>
-              <p className="text-[9px] text-slate-500 mt-0.5">Receitas</p>
-            </div>
-            <div className="flex-1 p-2.5 rounded-lg bg-rose-900/15">
-              <div className="flex items-center gap-1">
-                <TrendingDown size={12} className="text-rose-400" />
-                <span className="text-[10px] font-semibold text-rose-400">{api.formatCurrency(summary.despesas_debito)}</span>
-              </div>
-              <p className="text-[9px] text-slate-500 mt-0.5">Despesas</p>
-            </div>
-          </div>
-          <div className={`mt-3 p-2.5 rounded-lg text-center ${balanco_mes >= 0 ? 'bg-emerald-900/20' : 'bg-rose-900/20'}`}>
-            <p className={`text-sm font-bold ${balanco_mes >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-              {api.formatCurrency(balanco_mes)}
-            </p>
-            <p className="text-[10px] text-slate-500 mt-0.5">
-              <span className="text-[9px] text-slate-600">Receitas - Despesas à Vista</span>
-              {summary.despesas_credito > 0 && (
-                <span className="ml-2">💳 crédito: {api.formatCurrency(summary.despesas_credito)}</span>
-              )}
-            </p>
-          </div>
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Balanço do Mês</p>
+          <p className={`text-2xl font-bold mt-2 ${balanco_mes >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+            {api.formatCurrency(balanco_mes)}
+          </p>
+          {balanco_mes >= 0
+            ? <p className="text-[11px] text-emerald-500 mt-1">Saldo positivo</p>
+            : <p className="text-[11px] text-rose-500 mt-1">Saldo negativo</p>
+          }
         </Card>
 
         {creditUsage.length > 0 && creditUsage[0].credit_limit > 0 && (
