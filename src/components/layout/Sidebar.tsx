@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ArrowLeftRight, PiggyBank, Wallet, CreditCard, Tags, Calendar as CalendarIcon, List, DollarSign, Handshake } from 'lucide-react';
+import { LayoutDashboard, ArrowLeftRight, PiggyBank, Wallet, CreditCard, Tags, Calendar as CalendarIcon, List, DollarSign, Handshake, Upload } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useUI } from '../../stores/useUI';
 
@@ -11,6 +11,7 @@ const links = [
   { to: '/invoice', label: 'Faturas', icon: CreditCard },
   { to: '/categories', label: 'Categorias', icon: List },
   { to: '/tags', label: 'Tags', icon: Tags },
+  { to: '/import', label: 'Importar', icon: Upload },
   { to: '/calendar', label: 'Calendário', icon: CalendarIcon },
   { to: '/income', label: 'Rendas', icon: DollarSign },
   { to: '/settlements', label: 'Acertos', icon: Handshake },

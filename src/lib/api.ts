@@ -13,6 +13,7 @@ import type {
   CreateTransactionData, UpdateTransactionData,
   CreateBudgetData, UpdateTagData,
   TransactionFilter,
+  ImportPreview, ImportRequest, ImportResult,
 } from '../types';
 
 export function getAccounts(): Promise<Account[]> {
@@ -148,6 +149,19 @@ export function deleteSubscription(id: string): Promise<void> {
 }
 export function checkAndGenerateCharges(): Promise<number> {
   return invoke('check_and_generate_charges');
+}
+
+// Import
+export function parseImportFile(path: string): Promise<ImportPreview> {
+  return invoke('parse_import_file', { path });
+}
+
+export function parseCsvWithMapping(path: string, columnMap: string[]): Promise<ImportPreview> {
+  return invoke('parse_csv_with_mapping', { path, columnMap });
+}
+
+export function importTransactions(request: ImportRequest): Promise<ImportResult> {
+  return invoke('import_transactions', { request });
 }
 
 export function formatCurrency(value: number): string {

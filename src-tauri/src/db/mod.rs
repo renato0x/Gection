@@ -165,6 +165,16 @@ impl Database {
             }
         }
 
+        // Import dedup table
+        let _ = conn.execute_batch("
+            CREATE TABLE IF NOT EXISTS imported_ids (
+                fit_id TEXT NOT NULL,
+                account_id TEXT NOT NULL,
+                imported_at TEXT NOT NULL DEFAULT (datetime('now')),
+                PRIMARY KEY (fit_id, account_id)
+            );
+        ");
+
         Ok(())
     }
 }

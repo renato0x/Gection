@@ -423,6 +423,55 @@ pub struct AccountMonthlyStats {
     pub last_tx_amount: Option<f64>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ParsedTransaction {
+    pub line: i32,
+    pub date: String,
+    pub amount: f64,
+    pub description: String,
+    pub transaction_type: String,
+    pub fit_id: Option<String>,
+    pub source: String,
+    pub category_name: Option<String>,
+    pub installment_group_key: Option<String>,
+    pub installment_total: Option<i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ImportPreview {
+    pub format: String,
+    pub columns: Vec<String>,
+    pub transactions: Vec<ParsedTransaction>,
+    pub auto_parsed: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ImportTransaction {
+    pub line: i32,
+    pub date: String,
+    pub amount: f64,
+    pub description: String,
+    pub transaction_type: String,
+    pub fit_id: Option<String>,
+    pub category_id: Option<String>,
+    pub total_installments: Option<i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ImportRequest {
+    pub account_id: String,
+    pub transactions: Vec<ImportTransaction>,
+    pub skip_duplicates: bool,
+    pub default_category_id: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ImportResult {
+    pub imported: i32,
+    pub skipped: i32,
+    pub errors: Vec<String>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FutureInvoiceGroup {
     pub due_month: i32,

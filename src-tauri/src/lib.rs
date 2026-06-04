@@ -12,6 +12,7 @@ pub fn run() {
                 .level(log::LevelFilter::Info)
                 .build(),
         )
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             let app_dir = app.path().document_dir().map_err(|e| e.to_string())?.join("Gection");
             std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
@@ -52,6 +53,9 @@ pub fn run() {
             commands::invoice::get_invoice,
             commands::invoice::get_credit_usage,
             commands::invoice::get_future_invoices,
+            commands::import::parse_import_file,
+            commands::import::parse_csv_with_mapping,
+            commands::import::import_transactions,
             commands::income::get_income_sources,
             commands::income::create_income_source,
             commands::income::update_income_source,

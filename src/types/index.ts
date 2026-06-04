@@ -393,3 +393,48 @@ export interface TagSpending {
   total: number;
   percentage: number;
 }
+
+// Import
+export interface ParsedTransaction {
+  line: number;
+  date: string;
+  amount: number;
+  description: string;
+  transaction_type: string;
+  fit_id: string | null;
+  source: string;
+  category_name: string | null;
+  installment_group_key: string | null;
+  installment_total: number | null;
+}
+
+export interface ImportPreview {
+  format: string;
+  columns: string[];
+  transactions: ParsedTransaction[];
+  auto_parsed: boolean;
+}
+
+export interface ImportRequest {
+  account_id: string;
+  transactions: ImportTransactionItem[];
+  skip_duplicates: boolean;
+  default_category_id: string | null;
+}
+
+export interface ImportTransactionItem {
+  line: number;
+  date: string;
+  amount: number;
+  description: string;
+  transaction_type: string;
+  fit_id: string | null;
+  category_id: string | null;
+  total_installments: number | null;
+}
+
+export interface ImportResult {
+  imported: number;
+  skipped: number;
+  errors: string[];
+}
