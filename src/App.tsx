@@ -7,6 +7,7 @@ import { Accounts } from './pages/Accounts';
 import { Invoice } from './pages/Invoice';
 import { Tags } from './pages/Tags';
 import { ImportPage } from './pages/Import';
+import { Reports } from './pages/Reports';
 import { Calendar } from './pages/Calendar';
 import { Categories } from './pages/Categories';
 import { IncomeSources } from './pages/IncomeSources';
@@ -19,6 +20,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="/transactions" element={<Transactions />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/budget" element={<Budget />} />
           <Route path="/accounts" element={<Accounts />} />
           <Route path="/invoice" element={<Invoice />} />

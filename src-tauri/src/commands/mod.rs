@@ -7,5 +7,6 @@ pub mod dashboard;
 pub mod invoice;
 pub mod import;
 pub mod income;
+pub mod reports;
 pub mod subscriptions;
 pub mod settlements;

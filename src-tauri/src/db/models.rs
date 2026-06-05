@@ -472,6 +472,72 @@ pub struct ImportResult {
     pub errors: Vec<String>,
 }
 
+// === Report Models ===
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ReportFilter {
+    pub month_from: i32,
+    pub year_from: i32,
+    pub month_to: i32,
+    pub year_to: i32,
+    pub account_id: Option<String>,
+    pub category_id: Option<String>,
+    pub transaction_type: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PeriodInfo {
+    pub month_from: i32,
+    pub year_from: i32,
+    pub month_to: i32,
+    pub year_to: i32,
+    pub label: String,
+    pub prev_label: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ReportSummary {
+    pub total_income: f64,
+    pub total_expense: f64,
+    pub total_expense_debit: f64,
+    pub total_expense_credit: f64,
+    pub net: f64,
+    pub balance_current: f64,
+    pub tx_count: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CategoryBreakdown {
+    pub category_id: Option<String>,
+    pub category_name: String,
+    pub category_color: String,
+    pub category_icon: String,
+    pub total: f64,
+    pub percentage: f64,
+    pub count: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AccountBreakdown {
+    pub account_id: String,
+    pub account_name: String,
+    pub account_type: String,
+    pub income: f64,
+    pub expense: f64,
+    pub balance: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ConsolidatedReport {
+    pub period: PeriodInfo,
+    pub summary: ReportSummary,
+    pub prev_summary: Option<ReportSummary>,
+    pub income_by_category: Vec<CategoryBreakdown>,
+    pub expense_by_category: Vec<CategoryBreakdown>,
+    pub by_account: Vec<AccountBreakdown>,
+    pub transactions: Vec<Transaction>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FutureInvoiceGroup {
     pub due_month: i32,

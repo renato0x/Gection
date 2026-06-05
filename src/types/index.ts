@@ -394,6 +394,65 @@ export interface TagSpending {
   percentage: number;
 }
 
+// Reports
+export interface ReportFilter {
+  month_from: number;
+  year_from: number;
+  month_to: number;
+  year_to: number;
+  account_id: string | null;
+  category_id: string | null;
+  transaction_type: string | null;
+}
+
+export interface PeriodInfo {
+  month_from: number;
+  year_from: number;
+  month_to: number;
+  year_to: number;
+  label: string;
+  prev_label: string;
+}
+
+export interface ReportSummary {
+  total_income: number;
+  total_expense: number;
+  total_expense_debit: number;
+  total_expense_credit: number;
+  net: number;
+  balance_current: number;
+  tx_count: number;
+}
+
+export interface CategoryBreakdown {
+  category_id: string | null;
+  category_name: string;
+  category_color: string;
+  category_icon: string;
+  total: number;
+  percentage: number;
+  count: number;
+}
+
+export interface AccountBreakdown {
+  account_id: string;
+  account_name: string;
+  account_type: string;
+  income: number;
+  expense: number;
+  balance: number;
+}
+
+export interface ConsolidatedReport {
+  period: PeriodInfo;
+  summary: ReportSummary;
+  prev_summary: ReportSummary | null;
+  income_by_category: CategoryBreakdown[];
+  expense_by_category: CategoryBreakdown[];
+  by_account: AccountBreakdown[];
+  transactions: Transaction[];
+}
+
 // Import
 export interface ParsedTransaction {
   line: number;

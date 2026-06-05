@@ -56,6 +56,8 @@ pub fn run() {
             commands::import::parse_import_file,
             commands::import::parse_csv_with_mapping,
             commands::import::import_transactions,
+            commands::reports::get_consolidated_report,
+            commands::reports::export_report_csv,
             commands::income::get_income_sources,
             commands::income::create_income_source,
             commands::income::update_income_source,

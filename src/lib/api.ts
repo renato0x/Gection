@@ -14,6 +14,7 @@ import type {
   CreateBudgetData, UpdateTagData,
   TransactionFilter,
   ImportPreview, ImportRequest, ImportResult,
+  ReportFilter, ConsolidatedReport,
 } from '../types';
 
 export function getAccounts(): Promise<Account[]> {
@@ -149,6 +150,15 @@ export function deleteSubscription(id: string): Promise<void> {
 }
 export function checkAndGenerateCharges(): Promise<number> {
   return invoke('check_and_generate_charges');
+}
+
+// Reports
+export function getConsolidatedReport(filter: ReportFilter): Promise<ConsolidatedReport> {
+  return invoke('get_consolidated_report', { filter });
+}
+
+export function exportReportCsv(filter: ReportFilter, savePath: string): Promise<void> {
+  return invoke('export_report_csv', { filter, savePath });
 }
 
 // Import
