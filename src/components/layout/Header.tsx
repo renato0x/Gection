@@ -16,7 +16,7 @@ export function Header() {
   };
 
   return (
-    <header className="h-14 border-b border-slate-200/80 dark:border-slate-700/50 flex items-center justify-between px-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
+    <header className="print-hidden h-14 border-b border-slate-200/80 dark:border-slate-700/50 flex items-center justify-between px-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
       <div className="flex items-center gap-2">
         <button onClick={toggleSidebar} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
           <Menu size={18} strokeWidth={1.5} />

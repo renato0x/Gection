@@ -322,7 +322,7 @@ pub fn export_report_csv(db: State<Database>, filter: ReportFilter, save_path: S
 
     // Income categories
     wtr.write_record(&["=== RECEITAS POR CATEGORIA ==="]).map_err(|e| e.to_string())?;
-    wtr.write_record(&["Categoria;Valor;%;Qtd"]).map_err(|e| e.to_string())?;
+    wtr.write_record(&["Categoria", "Valor", "%", "Qtd"]).map_err(|e| e.to_string())?;
     for c in &report.income_by_category {
         wtr.write_record(&[&c.category_name, &fmt_cash(c.total), &fmt_pct(c.percentage), &c.count.to_string()])
             .map_err(|e| e.to_string())?;
@@ -331,7 +331,7 @@ pub fn export_report_csv(db: State<Database>, filter: ReportFilter, save_path: S
 
     // Expense categories
     wtr.write_record(&["=== DESPESAS POR CATEGORIA ==="]).map_err(|e| e.to_string())?;
-    wtr.write_record(&["Categoria;Valor;%;Qtd"]).map_err(|e| e.to_string())?;
+    wtr.write_record(&["Categoria", "Valor", "%", "Qtd"]).map_err(|e| e.to_string())?;
     for c in &report.expense_by_category {
         wtr.write_record(&[&c.category_name, &fmt_cash(c.total), &fmt_pct(c.percentage), &c.count.to_string()])
             .map_err(|e| e.to_string())?;
@@ -340,7 +340,7 @@ pub fn export_report_csv(db: State<Database>, filter: ReportFilter, save_path: S
 
     // Transactions
     wtr.write_record(&["=== TRANSAÇÕES ==="]).map_err(|e| e.to_string())?;
-    wtr.write_record(&["Data;Descrição;Categoria;Conta;Valor;Tipo"]).map_err(|e| e.to_string())?;
+    wtr.write_record(&["Data", "Descrição", "Categoria", "Conta", "Valor", "Tipo"]).map_err(|e| e.to_string())?;
     for t in &report.transactions {
         wtr.write_record(&[
             &t.date, &t.description,

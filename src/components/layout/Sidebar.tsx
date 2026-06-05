@@ -23,7 +23,7 @@ export function Sidebar() {
 
   return (
     <aside className={clsx(
-      'h-screen flex flex-col border-r border-slate-200/80 dark:border-slate-700/50 bg-sidebar transition-all duration-300',
+      'print-hidden h-screen flex flex-col border-r border-slate-200/80 dark:border-slate-700/50 bg-sidebar transition-all duration-300',
       sidebarOpen ? 'w-60' : 'w-16',
     )}>
       <div className={clsx(

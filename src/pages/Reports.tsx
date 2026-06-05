@@ -407,6 +407,8 @@ const printStyles = `
   .dark\\:bg-slate-800\\/95 {
     background-color: white !important;
   }
+  main { padding: 0 !important; margin: 0 !important; overflow: visible !important; }
+  .flex.h-screen { display: block !important; height: auto !important; overflow: visible !important; }
   .max-h-80 { max-height: none !important; overflow: visible !important; }
   .overflow-y-auto { overflow: visible !important; }
   @page { margin: 1.5cm; }
