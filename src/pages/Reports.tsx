@@ -47,6 +47,14 @@ export function Reports() {
 
   useEffect(() => { generate(); }, [generate]);
 
+  useEffect(() => {
+    const el = document.createElement('style');
+    el.id = 'gection-print-styles';
+    el.textContent = printStyles;
+    document.head.appendChild(el);
+    return () => { document.getElementById('gection-print-styles')?.remove(); };
+  }, []);
+
   const handleExportCsv = async () => {
     try {
       const savePath = await save({
@@ -88,7 +96,6 @@ export function Reports() {
 
   return (
     <>
-      <style>{printStyles}</style>
       <div className="space-y-5 print:space-y-3">
         {/* Header */}
         <div className="print-hidden flex items-center justify-between">

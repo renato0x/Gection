@@ -294,7 +294,9 @@ pub fn export_report_csv(db: State<Database>, filter: ReportFilter, save_path: S
     let report = build_report(&filter, &conn)?;
     drop(conn);
 
-    let mut wtr = csv::Writer::from_writer(Vec::new());
+    let mut wtr = csv::WriterBuilder::new()
+        .flexible(true)
+        .from_writer(Vec::new());
 
     let header = format!("Relatório Consolidado - GECTION - {}", report.period.label);
     wtr.write_record(&[&header]).map_err(|e| e.to_string())?;
